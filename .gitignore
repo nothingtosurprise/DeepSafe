@@ -1,17 +1,18 @@
+# OS files
+**/.DS_Store
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Node
+node_modules/
+
+# Model weights (large files)
+models/audio/vocoder_artifacts/models/*.pth
+models/audio/vocoder_artifacts/temp_repo/
+
+# Artifacts
 walkthrough.md
 VERIFICATION.md
-frontend/node_modules
-.DS_Store
-models/.DS_Store
-frontend/.DS_Store
-# ignore all .DS_Store files
-.DS_Store
-.DS_Store
-.DS_Store
-models/audio/vocoder_artifacts/models/librifake_pretrained_lambda0.5_epoch_25.pth
-deepsafe_utils/__pycache__/visualizer.cpython-313.pyc
-.gitignore
-#ignore all .pyc files
-*.pyc   
-models/audio/vocoder_artifacts/temp_repo
-models/audio/vocoder_artifacts/temp_repo
