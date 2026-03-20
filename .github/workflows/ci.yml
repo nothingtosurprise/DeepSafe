@@ -38,4 +38,4 @@ jobs:
     # For now, we verify that the docker-compose config is valid.
     - name: Verify Docker Compose Config
       run: |
-        docker-compose config
+        docker compose config
