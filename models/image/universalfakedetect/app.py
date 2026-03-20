@@ -314,7 +314,6 @@ def read_root():
 @app.get("/health")
 def health_check():
 
-
     weights_path = "universalfakedetect/pretrained_weights/fc_weights.pth"
     model_file_exists = os.path.exists(weights_path)
 
