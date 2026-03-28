@@ -33,7 +33,9 @@ def main():
                 r = requests.get(local_url, timeout=5)
                 data = r.json()
                 status = data.get("status", "unknown")
-                loaded = str(data.get("model_loaded", data.get("model_currently_loaded", "?")))
+                loaded = str(
+                    data.get("model_loaded", data.get("model_currently_loaded", "?"))
+                )
             except requests.exceptions.ConnectionError:
                 status = "unreachable"
                 loaded = "-"

@@ -7,7 +7,7 @@
 [![Python 3.9](https://img.shields.io/badge/python-3.9-blue.svg)](https://www.python.org/downloads/)
 [![Docker](https://img.shields.io/badge/docker-ready-blue.svg)](https://www.docker.com/)
 [![Dataset on HF](https://img.shields.io/badge/HuggingFace-Dataset-orange)](https://huggingface.co/datasets/siddharthksah/DeepSafe-benchmark)
-[![Weights on HF](https://img.shields.io/badge/HuggingFace-Weights-orange)](https://huggingface.co/siddharthksah/DeepSafe-weights)
+[![Weights on HF](https://img.shields.io/badge/HuggingFace-Weights-orange)](https://huggingface.co/siddharthksah/deepsafe-weights)
 
 DeepSafe is a modular platform that combines multiple state-of-the-art deepfake detection models into a single ensemble system. Each model runs in its own Docker container. A central API gateway orchestrates requests, dispatches them to model services, and fuses results using voting, averaging, or a trained stacking meta-learner.
 
@@ -21,21 +21,20 @@ DeepSafe is a modular platform that combines multiple state-of-the-art deepfake 
 
 ## Architecture
 
-```
-Browser :8888 --> Nginx --> React SPA
-                    |
-                    +--> /api/* proxy --> FastAPI Gateway :8000
-                                              |
-                          +-------------------+-------------------+
-                          |                   |                   |
-                    NPR :5001          UFD :5004           CEV :7001
-                   (Image)             (Image)             (Video)
-                          |                   |                   |
-                          +-------------------+-------------------+
-                                              |
-                                     Meta-Learner (Stacking)
-                                              |
-                                         Verdict
+```mermaid
+graph TD
+    Browser["Browser :8888"] --> Nginx["Nginx + React SPA"]
+    Nginx -->|"/api/*"| Gateway["FastAPI Gateway :8000"]
+
+    Gateway --> NPR["NPR :5001<br/>(Image)"]
+    Gateway --> UFD["UniversalFakeDetect :5004<br/>(Image)"]
+    Gateway --> CEV["CrossEfficientViT :7001<br/>(Video)"]
+
+    NPR --> Ensemble["Meta-Learner<br/>(Stacking / Voting / Average)"]
+    UFD --> Ensemble
+    CEV --> Ensemble
+
+    Ensemble --> Verdict["Verdict + Confidence"]
 ```
 
 Every model container exposes two endpoints: `GET /health` and `POST /predict`. The gateway reads model registrations from a single config file and handles the rest.
@@ -65,7 +64,7 @@ make start
 | **UniversalFakeDetect** | Image | 5004 | CLIP-based detector that generalizes across generators | [Paper](https://arxiv.org/abs/2302.10174) / [GitHub](https://github.com/WisconsinAIVision/UniversalFakeDetect) |
 | **Cross-Efficient ViT** | Video | 7001 | EfficientNet + Vision Transformer for video analysis | [Paper](https://arxiv.org/abs/2107.02612) / [GitHub](https://github.com/davide-coccomini/Combining-EfficientNet-and-Vision-Transformers-for-Video-Deepfake-Detection) |
 
-All model weights are mirrored on [HuggingFace](https://huggingface.co/siddharthksah/DeepSafe-weights) for resilience.
+All model weights are mirrored on [HuggingFace](https://huggingface.co/siddharthksah/deepsafe-weights) for resilience.
 
 ---
 

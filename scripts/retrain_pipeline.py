@@ -98,11 +98,16 @@ def run_feature_generation(media_type, dataset_dir, output_csv, healthy_models):
     cmd = [
         sys.executable,
         os.path.join(PROJECT_ROOT, "meta_feature_generator.py"),
-        "--media-type", media_type,
-        "--input-dir", dataset_dir,
-        "--output-csv", output_csv,
-        "--config-path", CONFIG_PATH,
-        "--specific-models", ",".join(healthy_models),
+        "--media-type",
+        media_type,
+        "--input-dir",
+        dataset_dir,
+        "--output-csv",
+        output_csv,
+        "--config-path",
+        CONFIG_PATH,
+        "--specific-models",
+        ",".join(healthy_models),
     ]
 
     result = subprocess.run(cmd, cwd=PROJECT_ROOT)
@@ -129,12 +134,18 @@ def run_training(media_type, meta_csv, optimizer, trials):
     cmd = [
         sys.executable,
         os.path.join(PROJECT_ROOT, "train_meta_learner_advanced.py"),
-        "--media-type", media_type,
-        "--meta-file", meta_csv,
-        "--output-dir", EXPERIMENT_DIR,
-        "--api-artifacts-dir", API_ARTIFACTS_DIR,
-        "--optimizer", optimizer,
-        "--optuna-trials", str(trials),
+        "--media-type",
+        media_type,
+        "--meta-file",
+        meta_csv,
+        "--output-dir",
+        EXPERIMENT_DIR,
+        "--api-artifacts-dir",
+        API_ARTIFACTS_DIR,
+        "--optimizer",
+        optimizer,
+        "--optuna-trials",
+        str(trials),
     ]
 
     result = subprocess.run(cmd, cwd=PROJECT_ROOT)
@@ -184,31 +195,41 @@ def main():
         description="DeepSafe one-command ensemble retraining pipeline"
     )
     parser.add_argument(
-        "--media-type", required=True, choices=["image", "video", "audio"],
+        "--media-type",
+        required=True,
+        choices=["image", "video", "audio"],
         help="Media type to retrain ensemble for",
     )
     parser.add_argument(
-        "--dataset-dir", default=None,
+        "--dataset-dir",
+        default=None,
         help="Path to labeled dataset (default: public_dataset/{media_type})",
     )
     parser.add_argument(
-        "--optimizer", default="gridsearch", choices=["optuna", "gridsearch"],
+        "--optimizer",
+        default="gridsearch",
+        choices=["optuna", "gridsearch"],
         help="Hyperparameter optimizer (default: gridsearch)",
     )
     parser.add_argument(
-        "--optuna-trials", type=int, default=50,
+        "--optuna-trials",
+        type=int,
+        default=50,
         help="Number of Optuna trials (default: 50)",
     )
     parser.add_argument(
-        "--skip-generate", action="store_true",
+        "--skip-generate",
+        action="store_true",
         help="Skip meta-feature generation (use existing CSV)",
     )
     parser.add_argument(
-        "--meta-csv", default=None,
+        "--meta-csv",
+        default=None,
         help="Path to existing meta-features CSV (with --skip-generate)",
     )
     parser.add_argument(
-        "--restart-api", action="store_true",
+        "--restart-api",
+        action="store_true",
         help="Restart the API container after training to load new artifacts",
     )
     args = parser.parse_args()
@@ -229,7 +250,9 @@ def main():
     healthy_models = health_check_models(config, args.media_type)
 
     if not healthy_models:
-        print(f"\nERROR: No healthy models found for '{args.media_type}'. Start services first: make start")
+        print(
+            f"\nERROR: No healthy models found for '{args.media_type}'. Start services first: make start"
+        )
         sys.exit(1)
 
     print(f"\n  {len(healthy_models)} model(s) available for training")

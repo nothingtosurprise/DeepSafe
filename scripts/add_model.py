@@ -24,13 +24,19 @@ CONFIG_PATH = os.path.join(PROJECT_ROOT, "config", "deepsafe_config.json")
 COMPOSE_PATH = os.path.join(PROJECT_ROOT, "docker-compose.yml")
 MODELS_DIR = os.path.join(PROJECT_ROOT, "models")
 
-MEDIA_TYPE_PAYLOAD_KEYS = {"image": "image_data", "video": "video_data", "audio": "audio_data"}
+MEDIA_TYPE_PAYLOAD_KEYS = {
+    "image": "image_data",
+    "video": "video_data",
+    "audio": "audio_data",
+}
 PORT_RANGES = {"image": "5xxx", "video": "7xxx", "audio": "8xxx"}
 
 
 def validate_name(name):
     if not re.match(r"^[a-z][a-z0-9_]*$", name):
-        print(f"ERROR: Model name '{name}' must be lowercase snake_case (e.g., my_detector)")
+        print(
+            f"ERROR: Model name '{name}' must be lowercase snake_case (e.g., my_detector)"
+        )
         sys.exit(1)
 
 
@@ -54,7 +60,9 @@ def update_config(name, media_type, port):
     mt = config["media_types"][media_type]
 
     if name in mt.get("model_endpoints", {}):
-        print(f"WARNING: Model '{name}' already in config for '{media_type}'. Overwriting.")
+        print(
+            f"WARNING: Model '{name}' already in config for '{media_type}'. Overwriting."
+        )
 
     mt.setdefault("model_endpoints", {})[name] = f"http://{name}:{port}/predict"
     mt.setdefault("health_endpoints", {})[name] = f"http://{name}:{port}/health"
@@ -131,7 +139,9 @@ def scaffold_model(name, media_type, port):
 
     # requirements.txt
     with open(os.path.join(model_dir, "requirements.txt"), "w") as f:
-        f.write("fastapi>=0.100.0\nuvicorn[standard]>=0.23.0\npydantic>=2.0.0\npillow\nrequests\n")
+        f.write(
+            "fastapi>=0.100.0\nuvicorn[standard]>=0.23.0\npydantic>=2.0.0\npillow\nrequests\n"
+        )
 
     # Dockerfile
     with open(os.path.join(model_dir, "Dockerfile"), "w") as f:
@@ -267,11 +277,19 @@ def scaffold_model(name, media_type, port):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Add a new model to the DeepSafe platform")
+    parser = argparse.ArgumentParser(
+        description="Add a new model to the DeepSafe platform"
+    )
     parser.add_argument("--name", required=True, help="Model name (snake_case)")
-    parser.add_argument("--media-type", required=True, choices=["image", "video", "audio"])
-    parser.add_argument("--port", required=True, type=int, help="Port number for the model service")
-    parser.add_argument("--no-scaffold", action="store_true", help="Skip Dockerfile/app.py generation")
+    parser.add_argument(
+        "--media-type", required=True, choices=["image", "video", "audio"]
+    )
+    parser.add_argument(
+        "--port", required=True, type=int, help="Port number for the model service"
+    )
+    parser.add_argument(
+        "--no-scaffold", action="store_true", help="Skip Dockerfile/app.py generation"
+    )
     args = parser.parse_args()
 
     validate_name(args.name)
@@ -297,8 +315,12 @@ def main():
         scaffold_model(args.name, args.media_type, args.port)
 
     print(f"\nDone! Next steps:")
-    print(f"  1. Implement inference logic in models/{args.media_type}/{args.name}/app.py")
-    print(f"  2. Add dependencies to models/{args.media_type}/{args.name}/requirements.txt")
+    print(
+        f"  1. Implement inference logic in models/{args.media_type}/{args.name}/app.py"
+    )
+    print(
+        f"  2. Add dependencies to models/{args.media_type}/{args.name}/requirements.txt"
+    )
     print(f"  3. Update the Dockerfile with weight downloads")
     print(f"  4. Run: make start")
     print(f"  5. Retrain ensemble: make retrain MEDIA_TYPE={args.media_type}")
