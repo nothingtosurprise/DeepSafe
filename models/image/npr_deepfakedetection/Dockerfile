@@ -8,18 +8,17 @@ RUN apt-get update && apt-get install -y --no-install-recommends git wget && apt
 # Copy requirements file
 COPY requirements.txt .
 
-# Upgrade pip and install common build tools
-RUN pip install --no-cache-dir --upgrade pip setuptools wheel && pip install uv
+# Install pip tools
+RUN pip install --no-cache-dir --upgrade pip setuptools wheel
 
-# Install NumPy first - use a common and stable version
-RUN uv pip install --system --no-cache-dir numpy==1.23.5 
+# Install PyTorch CPU-only (works on both x86 and ARM)
+RUN pip install --no-cache-dir \
+    torch==2.0.1 \
+    torchvision==0.15.2 \
+    --index-url https://download.pytorch.org/whl/cpu
 
-# Install PyTorch CPU version (2.0.1 from requirements.txt) and other dependencies
-# Ensure torch and torchvision are for CPU
-RUN uv pip install --system torch==2.0.1 torchvision==0.15.2 --extra-index-url https://download.pytorch.org/whl/cpu
-# Install other dependencies from requirements.txt
-# Pip should skip torch/torchvision if already installed with the correct version.
-RUN uv pip install --system --no-cache-dir -r requirements.txt
+# Install other dependencies
+RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy application code
 COPY app.py .
@@ -38,8 +37,6 @@ ENV USE_GPU=false
 ENV PRELOAD_MODEL=false
 ENV MODEL_TIMEOUT=600
 
-# Expose port
 EXPOSE 5001
 
-# Run the application
 CMD ["python", "app.py"]

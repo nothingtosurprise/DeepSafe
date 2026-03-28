@@ -1042,17 +1042,6 @@ async def predict_media_endpoint_api(request: Request, input_data: PredictInput)
     )
     return response_payload
 
-    print_results_summary_table_api(
-        req_id,
-        media_type,
-        actual_method_used,
-        verdict,
-        ensemble_prob_fake,
-        model_query_results,
-        input_data.threshold,
-    )
-    return response_payload
-
 
 # --- Auth Endpoints ---
 

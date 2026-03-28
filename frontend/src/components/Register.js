@@ -1,6 +1,10 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+const API_BASE_URL = window.location.hostname === 'localhost' && window.location.port === '3000'
+  ? 'http://localhost:8000'  // Local dev (npm start)
+  : '/api';                   // Docker (Nginx proxy)
+
 const Register = ({ onLogin }) => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
@@ -24,7 +28,7 @@ const Register = ({ onLogin }) => {
             formData.append('username', username);
             formData.append('password', password);
 
-            const response = await fetch('http://localhost:8000/register', {
+            const response = await fetch(`${API_BASE_URL}/register`, {
                 method: 'POST',
                 body: formData,
             });

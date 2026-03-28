@@ -26,7 +26,9 @@ ChartJS.register(
     ArcElement
 );
 
-const API_BASE_URL = 'http://localhost:8000';
+const API_BASE_URL = window.location.hostname === 'localhost' && window.location.port === '3000'
+  ? 'http://localhost:8000'  // Local dev (npm start)
+  : '/api';                   // Docker (Nginx proxy)
 
 // Protected Route Wrapper
 const ProtectedRoute = ({ children, isAuthenticated }) => {

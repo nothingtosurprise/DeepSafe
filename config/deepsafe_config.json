@@ -23,12 +23,10 @@
     },
     "video": {
       "model_endpoints": {
-        "cross_efficient_vit": "http://cross_efficient_vit:7001/predict",
-        "fake_stormer": "http://fake_stormer:7002/predict"
+        "cross_efficient_vit": "http://cross_efficient_vit:7001/predict"
       },
       "health_endpoints": {
-        "cross_efficient_vit": "http://cross_efficient_vit:7001/health",
-        "fake_stormer": "http://fake_stormer:7002/health"
+        "cross_efficient_vit": "http://cross_efficient_vit:7001/health"
       },
       "supported_extensions": [
         "*.mp4",
@@ -36,26 +34,11 @@
         "*.mov",
         "*.mkv"
       ]
-    },
-    "audio": {
-      "model_endpoints": {
-        "vocoder_artifacts": "http://vocoder_artifacts:8001/predict"
-      },
-      "health_endpoints": {
-        "vocoder_artifacts": "http://vocoder_artifacts:8001/health"
-      },
-      "supported_extensions": [
-        "*.mp3",
-        "*.wav",
-        "*.flac",
-        "*.aac",
-        "*.ogg"
-      ]
     }
   },
   "default_output_dir_base": "./deepsafe_test_results",
   "default_threshold": 0.5,
-  "default_ensemble_method": "stacking",
+  "default_ensemble_method": "voting",
   "default_api_timeout_seconds": 1200,
   "default_model_timeout_seconds_video": 1800,
   "memory_optimization": true,

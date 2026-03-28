@@ -211,7 +211,7 @@ def load_model_internal(variant_to_load: str):
             else:
                 raise ValueError(f"Unknown model variant: {variant_to_load}")
 
-            checkpoint = torch.load(model_path, map_location=DEVICE)
+            checkpoint = torch.load(model_path, map_location=DEVICE, weights_only=False)
             state_dict = checkpoint.get(
                 "state_dict", checkpoint.get("model", checkpoint)
             )
