@@ -18,17 +18,17 @@ jobs:
         python-version: "3.9"
 
     - name: Install linting tools
-      run: pip install black flake8
+      run: pip install "black==26.3.1" flake8
 
     - name: Check formatting with Black
-      run: black --check --exclude '/(\.git|node_modules|venv|\.venv|build|dist)/' .
+      run: black --check .
 
     - name: Lint with Flake8
       run: |
         # Fail on syntax errors or undefined names
-        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics --exclude=venv,node_modules,.git,build,dist
+        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics --exclude=venv,node_modules,.git,build,dist,frontend
         # Warn on style issues (non-blocking)
-        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics --exclude=venv,node_modules,.git,build,dist
+        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics --exclude=venv,node_modules,.git,build,dist,frontend
 
   test:
     runs-on: ubuntu-latest
