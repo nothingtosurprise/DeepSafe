@@ -82,7 +82,8 @@ def update_compose(name, media_type, port):
     container_name = f"deepsafe-{name.replace('_', '-')}"
     build_path = f"./models/{media_type}/{name}"
 
-    service_block = textwrap.dedent(f"""\
+    service_block = textwrap.dedent(
+        f"""\
   {name}:
     build: {build_path}
     container_name: {container_name}
@@ -97,7 +98,8 @@ def update_compose(name, media_type, port):
     networks:
       - deepsafe-network
 
-""")
+"""
+    )
 
     # Insert before top-level "networks:" line
     networks_match = re.search(r"\nnetworks:\s*\n", content)
@@ -145,7 +147,9 @@ def scaffold_model(name, media_type, port):
 
     # Dockerfile
     with open(os.path.join(model_dir, "Dockerfile"), "w") as f:
-        f.write(textwrap.dedent(f"""\
+        f.write(
+            textwrap.dedent(
+                f"""\
             FROM python:3.9-slim
 
             WORKDIR /app
@@ -169,11 +173,15 @@ def scaffold_model(name, media_type, port):
 
             EXPOSE ${{MODEL_PORT}}
             CMD ["python", "app.py"]
-        """))
+        """
+            )
+        )
 
     # app.py
     with open(os.path.join(model_dir, "app.py"), "w") as f:
-        f.write(textwrap.dedent(f'''\
+        f.write(
+            textwrap.dedent(
+                f'''\
             """
             {name} Model Service
             TODO: Implement your model loading and inference logic.
@@ -269,7 +277,9 @@ def scaffold_model(name, media_type, port):
 
             if __name__ == "__main__":
                 uvicorn.run("app:app", host="0.0.0.0", port=MODEL_PORT, reload=False)
-        '''))
+        '''
+            )
+        )
 
     print(f"  [OK] Scaffolded model at {model_dir}")
     print(f"       -> Edit app.py to implement your inference logic")
