@@ -5,6 +5,7 @@ from deepsafe_sdk.base import DeepSafeModel
 from deepsafe_sdk.image import ImageModel
 from deepsafe_sdk.video import VideoModel
 from deepsafe_sdk.audio import AudioModel
+from deepsafe_sdk.server import create_app
 
 __all__ = [
     "PredictionResult",
@@ -15,4 +16,5 @@ __all__ = [
     "ImageModel",
     "VideoModel",
     "AudioModel",
+    "create_app",
 ]
