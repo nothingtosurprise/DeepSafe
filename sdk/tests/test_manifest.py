@@ -1,7 +1,7 @@
 import os
 import pytest
 import yaml
-from deepsafe_sdk.manifest import ModelManifest, load_manifest
+from deepsafe_sdk.manifest import load_manifest
 
 
 def _write_manifest(tmp_path, data):

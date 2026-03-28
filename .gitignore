@@ -16,3 +16,6 @@ models/audio/vocoder_artifacts/temp_repo/
 # Artifacts
 walkthrough.md
 VERIFICATION.md
+sdk/.venv/
+sdk/.venv/
+sdk/deepsafe_sdk.egg-info/

@@ -20,7 +20,9 @@ class VideoModel(DeepSafeModel):
             num_frames = self.frames_per_video
 
         video_bytes = base64.b64decode(base64_data)
-        tmp_path = os.path.join(tempfile.gettempdir(), f"deepsafe_{os.urandom(8).hex()}.mp4")
+        tmp_path = os.path.join(
+            tempfile.gettempdir(), f"deepsafe_{os.urandom(8).hex()}.mp4"
+        )
         try:
             with open(tmp_path, "wb") as f:
                 f.write(video_bytes)

@@ -41,7 +41,9 @@ class CrossEfficientViTDetector(VideoModel):
         super().__init__(**kwargs)
         self.frames_per_video = int(os.environ.get("FRAMES_PER_VIDEO", "15"))
         use_gpu = os.environ.get("USE_GPU", "false").lower() == "true"
-        self.device = torch.device("cuda" if use_gpu and torch.cuda.is_available() else "cpu")
+        self.device = torch.device(
+            "cuda" if use_gpu and torch.cuda.is_available() else "cpu"
+        )
         self.variant = os.environ.get("DEFAULT_MODEL_VARIANT", "cross_efficient_vit")
         self.face_detector = None
         self.face_transform = None
@@ -82,10 +84,14 @@ class CrossEfficientViTDetector(VideoModel):
             net = EfficientViT(
                 config=self.config,
                 channels=channels,
-                selected_efficient_net=self.config["model"].get("selected_efficient_net", 0),
+                selected_efficient_net=self.config["model"].get(
+                    "selected_efficient_net", 0
+                ),
             )
 
-        checkpoint = torch.load(model_path, map_location=self.device, weights_only=False)
+        checkpoint = torch.load(
+            model_path, map_location=self.device, weights_only=False
+        )
         state_dict = checkpoint.get("state_dict", checkpoint.get("model", checkpoint))
         new_state_dict = OrderedDict()
         for k, v in state_dict.items():
@@ -103,18 +109,20 @@ class CrossEfficientViTDetector(VideoModel):
             min_face_size=MTCNN_MIN_FACE_SIZE,
             select_largest=False,
         )
-        self.face_transform = Compose([
-            IsotropicResize(
-                max_side=image_size,
-                interpolation_down=cv2.INTER_AREA,
-                interpolation_up=cv2.INTER_CUBIC,
-            ),
-            PadIfNeeded(
-                min_height=image_size,
-                min_width=image_size,
-                border_mode=cv2.BORDER_CONSTANT,
-            ),
-        ])
+        self.face_transform = Compose(
+            [
+                IsotropicResize(
+                    max_side=image_size,
+                    interpolation_down=cv2.INTER_AREA,
+                    interpolation_up=cv2.INTER_CUBIC,
+                ),
+                PadIfNeeded(
+                    min_height=image_size,
+                    min_width=image_size,
+                    border_mode=cv2.BORDER_CONSTANT,
+                ),
+            ]
+        )
 
     def predict(self, input_data: str, threshold: float) -> PredictionResult:
         frames = self.extract_frames(input_data, num_frames=self.frames_per_video)
@@ -141,7 +149,10 @@ class CrossEfficientViTDetector(VideoModel):
                     continue
 
                 transformed = self.face_transform(image=face_crop)["image"]
-                tensor = torch.from_numpy(transformed.astype(np.float32)).permute(2, 0, 1) / 255.0
+                tensor = (
+                    torch.from_numpy(transformed.astype(np.float32)).permute(2, 0, 1)
+                    / 255.0
+                )
                 tensor = IMAGENET_NORMALIZE(tensor).unsqueeze(0).to(self.device)
 
                 with torch.no_grad():

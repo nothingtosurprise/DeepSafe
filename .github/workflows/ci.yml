@@ -48,6 +48,11 @@ jobs:
         pip install fastapi uvicorn pydantic aiohttp python-multipart pillow requests
         pip install joblib scikit-learn pandas rich sqlalchemy
         pip install "python-jose[cryptography]" "passlib[bcrypt]"
+        pip install pyyaml opencv-python-headless numpy
+        pip install -e sdk/
+
+    - name: Run SDK tests
+      run: pytest sdk/tests/ -v
 
     - name: Run unit tests
       env:

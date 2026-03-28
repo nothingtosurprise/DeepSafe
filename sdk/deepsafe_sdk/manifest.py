@@ -2,7 +2,6 @@ from dataclasses import dataclass, field
 from typing import List, Dict
 import yaml
 
-
 VALID_MEDIA_TYPES = {"image", "video", "audio"}
 
 

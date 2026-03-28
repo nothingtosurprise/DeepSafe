@@ -1,7 +1,6 @@
 import os
 import base64
 import io
-import pytest
 import yaml
 from PIL import Image
 from fastapi.testclient import TestClient

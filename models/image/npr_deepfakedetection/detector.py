@@ -18,20 +18,28 @@ class NPRDetector(ImageModel):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         use_gpu = os.environ.get("USE_GPU", "false").lower() == "true"
-        self.device = torch.device("cuda" if use_gpu and torch.cuda.is_available() else "cpu")
-        self.transform = transforms.Compose([
-            transforms.Resize((256, 256)),
-            transforms.CenterCrop(224),
-            transforms.ToTensor(),
-            transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
-        ])
+        self.device = torch.device(
+            "cuda" if use_gpu and torch.cuda.is_available() else "cpu"
+        )
+        self.transform = transforms.Compose(
+            [
+                transforms.Resize((256, 256)),
+                transforms.CenterCrop(224),
+                transforms.ToTensor(),
+                transforms.Normalize(
+                    mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]
+                ),
+            ]
+        )
 
     def load(self):
         weights_path = self.weights_path("npr_deepfakedetection/weights/NPR.pth")
         net = resnet50(num_classes=1)
-        state_dict = torch.load(weights_path, map_location=self.device, weights_only=False)
+        state_dict = torch.load(
+            weights_path, map_location=self.device, weights_only=False
+        )
         if all(k.startswith("module.") for k in state_dict.keys()):
-            state_dict = {k[len("module."):]: v for k, v in state_dict.items()}
+            state_dict = {k[len("module.") :]: v for k, v in state_dict.items()}
         net.load_state_dict(state_dict)
         net.to(self.device)
         net.eval()

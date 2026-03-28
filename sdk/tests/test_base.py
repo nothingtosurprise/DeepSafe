@@ -1,4 +1,3 @@
-import pytest
 from deepsafe_sdk.base import DeepSafeModel
 from deepsafe_sdk.types import PredictionResult
 

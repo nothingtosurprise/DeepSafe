@@ -57,12 +57,17 @@ def create_app(manifest: ModelManifest, model_dir: str) -> FastAPI:
     model_cls = _import_model_class(manifest.model_class, model_dir)
     instance: DeepSafeModel = model_cls(name=manifest.name, model_dir=model_dir)
 
-    preload = manifest.environment.get(
-        "PRELOAD_MODEL", os.environ.get("PRELOAD_MODEL", "false")
-    ).lower() == "true"
-    model_timeout = int(manifest.environment.get(
-        "MODEL_TIMEOUT", os.environ.get("MODEL_TIMEOUT", "600")
-    ))
+    preload = (
+        manifest.environment.get(
+            "PRELOAD_MODEL", os.environ.get("PRELOAD_MODEL", "false")
+        ).lower()
+        == "true"
+    )
+    model_timeout = int(
+        manifest.environment.get(
+            "MODEL_TIMEOUT", os.environ.get("MODEL_TIMEOUT", "600")
+        )
+    )
 
     InputModel = INPUT_MODELS[manifest.media_type]
     data_field = DATA_FIELD[manifest.media_type]
@@ -113,7 +118,10 @@ def create_app(manifest: ModelManifest, model_dir: str) -> FastAPI:
     @app.post("/unload")
     async def unload():
         if not instance.is_loaded:
-            return {"status": "not_loaded", "message": f"{manifest.name} is not loaded."}
+            return {
+                "status": "not_loaded",
+                "message": f"{manifest.name} is not loaded.",
+            }
         instance.unload()
         return {"status": "unloaded", "message": f"{manifest.name} unloaded."}
 
@@ -127,6 +135,7 @@ def create_app(manifest: ModelManifest, model_dir: str) -> FastAPI:
                 logger.error(f"Preload failed: {e}", exc_info=True)
 
         if model_timeout > 0:
+
             def idle_check():
                 instance.check_idle_unload(model_timeout)
                 if instance.is_loaded:

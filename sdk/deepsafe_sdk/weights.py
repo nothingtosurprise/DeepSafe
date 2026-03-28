@@ -20,7 +20,9 @@ def compute_sha256(filepath: str) -> str:
 def ensure_weights(weights: List[WeightEntry], model_dir: str) -> None:
     for entry in weights:
         if not entry.url:
-            logger.info(f"Weight entry '{entry.path}' has no URL. Skipping download (assumed present from Docker build).")
+            logger.info(
+                f"Weight entry '{entry.path}' has no URL. Skipping download (assumed present from Docker build)."
+            )
             continue
 
         filepath = os.path.join(model_dir, entry.path)
@@ -29,12 +31,19 @@ def ensure_weights(weights: List[WeightEntry], model_dir: str) -> None:
             if entry.sha256:
                 actual_sha = compute_sha256(filepath)
                 if actual_sha == entry.sha256:
-                    logger.info(f"Weight file '{entry.path}' exists with correct checksum. Skipping.")
+                    logger.info(
+                        f"Weight file '{entry.path}' exists with correct checksum. Skipping."
+                    )
                     continue
                 else:
-                    logger.warning(f"Weight file '{entry.path}' checksum mismatch (expected {entry.sha256}, got {actual_sha}). Re-downloading.")
+                    logger.warning(
+                        f"Weight file '{entry.path}' checksum mismatch "
+                        f"(expected {entry.sha256}, got {actual_sha}). Re-downloading."
+                    )
             else:
-                logger.info(f"Weight file '{entry.path}' exists (no checksum to verify). Skipping.")
+                logger.info(
+                    f"Weight file '{entry.path}' exists (no checksum to verify). Skipping."
+                )
                 continue
 
         os.makedirs(os.path.dirname(filepath), exist_ok=True)
@@ -45,6 +54,8 @@ def ensure_weights(weights: List[WeightEntry], model_dir: str) -> None:
             actual_sha = compute_sha256(filepath)
             if actual_sha != entry.sha256:
                 os.remove(filepath)
-                raise RuntimeError(f"Checksum mismatch for '{entry.path}': expected {entry.sha256}, got {actual_sha}")
+                raise RuntimeError(
+                    f"Checksum mismatch for '{entry.path}': expected {entry.sha256}, got {actual_sha}"
+                )
 
         logger.info(f"Weight file '{entry.path}' ready.")
