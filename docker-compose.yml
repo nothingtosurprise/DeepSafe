@@ -24,7 +24,9 @@ services:
 
   # --- Image Model Services ---
   npr_deepfakedetection:
-    build: ./models/image/npr_deepfakedetection
+    build:
+      context: .
+      dockerfile: models/image/npr_deepfakedetection/Dockerfile
     container_name: deepsafe-npr_deepfakedetection
     ports:
       - "5001:5001"
@@ -68,7 +70,9 @@ services:
   #     - deepsafe-network
 
   universalfakedetect:
-    build: ./models/image/universalfakedetect
+    build:
+      context: .
+      dockerfile: models/image/universalfakedetect/Dockerfile
     container_name: deepsafe-universalfakedetect
     ports:
       - "5004:5004"
@@ -124,7 +128,9 @@ services:
   #     - deepsafe-network
 
   cross_efficient_vit:
-    build: ./models/video/cross_efficient_vit
+    build:
+      context: .
+      dockerfile: models/video/cross_efficient_vit/Dockerfile
     container_name: deepsafe-cross-efficient-vit
     ports:
       - "7001:7001"
