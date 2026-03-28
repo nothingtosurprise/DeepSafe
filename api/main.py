@@ -21,10 +21,20 @@ import time
 import base64
 import requests
 import logging
-from typing import Dict, Any, List, Optional, Union, Tuple
-from fastapi import FastAPI, HTTPException, UploadFile, File, Form, Request, status
+from typing import Dict, Any, List, Optional, Tuple
+from fastapi import (
+    FastAPI,
+    HTTPException,
+    UploadFile,
+    File,
+    Form,
+    Request,
+    Depends,
+    status,
+)
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 
 # Updated Pydantic imports for V2
 from pydantic import BaseModel, Field, field_validator, model_validator, ValidationInfo
@@ -36,7 +46,6 @@ import joblib
 import numpy as np
 import pandas as pd
 import json
-
 import sys
 
 from rich.console import Console as RichConsole
@@ -44,8 +53,6 @@ from rich.table import Table as RichTable
 from rich.text import Text as RichText
 from passlib.context import CryptContext
 from jose import JWTError, jwt
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
-from fastapi import Depends, status
 from datetime import datetime, timedelta
 from sqlalchemy.orm import Session
 from database import init_db, get_db, SessionLocal, AnalysisHistory
@@ -213,7 +220,7 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
         username: str = payload.get("sub")
         if username is None:
             raise credentials_exception
-        token_data = TokenData(username=username)
+        TokenData(username=username)  # validate token data
     except JWTError:
         raise credentials_exception
     user = fake_users_db.get(username)
@@ -794,7 +801,11 @@ async def health_check_api_endpoint(request: Request):
             for model_name in model_endpoints_for_this_type.keys():
                 model_health_info = check_model_health_api(model_name, m_type)
                 type_specific_status["models"][model_name] = model_health_info
-                if model_health_info.get("status") != "healthy":
+                if model_health_info.get("status") not in (
+                    "healthy",
+                    "not_loaded",
+                    "degraded_not_loaded",
+                ):
                     all_models_for_type_healthy = False
 
             if not all_models_for_type_healthy:
@@ -1099,6 +1110,36 @@ async def detect_media_endpoint_api_form(
     req_id = request.state.request_id
     content_type = file.content_type
     inferred_media_type = CONTENT_TYPE_TO_MEDIA_TYPE_MAP.get(content_type)
+
+    # Fallback: infer media type from file extension when content_type is generic
+    if not inferred_media_type and file.filename:
+        ext = os.path.splitext(file.filename)[1].lower()
+        ext_to_media_type = {
+            ".jpg": "image",
+            ".jpeg": "image",
+            ".png": "image",
+            ".webp": "image",
+            ".bmp": "image",
+            ".gif": "image",
+            ".tiff": "image",
+            ".tif": "image",
+            ".mp4": "video",
+            ".avi": "video",
+            ".mov": "video",
+            ".mkv": "video",
+            ".m4v": "video",
+            ".wav": "audio",
+            ".mp3": "audio",
+            ".flac": "audio",
+            ".ogg": "audio",
+            ".m4a": "audio",
+        }
+        inferred_media_type = ext_to_media_type.get(ext)
+        if inferred_media_type:
+            logger.info(
+                f"Request {req_id}: Inferred media type '{inferred_media_type}' "
+                f"from file extension '{ext}' (content_type was '{content_type}')."
+            )
 
     if not inferred_media_type:
         logger.warning(

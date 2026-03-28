@@ -27,11 +27,18 @@ WORKDIR /app/model
 RUN git clone https://github.com/WisconsinAIVision/UniversalFakeDetect.git universalfakedetect && \
     mkdir -p universalfakedetect/pretrained_weights
 
+# Download CLIP model weights (HuggingFace mirror with original source fallback)
 RUN python -c "import torch; import os; os.makedirs('/root/.cache/clip', exist_ok=True)" && \
-    wget -O /root/.cache/clip/ViT-L-14.pt https://openaipublic.azureedge.net/clip/models/b8cca3fd41ae0c99ba7e8951adf17d267cdb84cd88be6f7c2e0eca1737a03836/ViT-L-14.pt
+    (wget -O /root/.cache/clip/ViT-L-14.pt \
+    https://huggingface.co/siddharthksah/DeepSafe-weights/resolve/main/universalfakedetect/ViT-L-14.pt \
+    || wget -O /root/.cache/clip/ViT-L-14.pt \
+    https://openaipublic.azureedge.net/clip/models/b8cca3fd41ae0c99ba7e8951adf17d267cdb84cd88be6f7c2e0eca1737a03836/ViT-L-14.pt)
 
-RUN wget -O universalfakedetect/pretrained_weights/fc_weights.pth \
-    https://github.com/WisconsinAIVision/UniversalFakeDetect/raw/main/pretrained_weights/fc_weights.pth
+# Download the FC weights (HuggingFace mirror with original source fallback)
+RUN (wget -O universalfakedetect/pretrained_weights/fc_weights.pth \
+    https://huggingface.co/siddharthksah/DeepSafe-weights/resolve/main/universalfakedetect/fc_weights.pth \
+    || wget -O universalfakedetect/pretrained_weights/fc_weights.pth \
+    https://github.com/WisconsinAIVision/UniversalFakeDetect/raw/main/pretrained_weights/fc_weights.pth)
 
 ENV MODEL_PORT=5004
 ENV USE_GPU=false

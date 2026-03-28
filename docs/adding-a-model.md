@@ -181,11 +181,43 @@ curl http://localhost:5020/health
 
 Your model is now part of the DeepSafe ensemble.
 
+## Automated Setup (Steps 4-5)
+
+Instead of manually editing docker-compose.yml and config, use:
+
+```bash
+make add-model NAME=my_model MEDIA_TYPE=image PORT=5020
+```
+
+This auto-generates the config and compose entries. Then:
+
+```bash
+make start       # Build and start all services
+make health      # Verify your model is running
+make retrain MEDIA_TYPE=image  # Retrain ensemble with the new model
+```
+
+## Ensemble Retraining
+
+After adding a model, retrain the stacking ensemble to include it:
+
+```bash
+# Full pipeline: feature generation + training
+make retrain MEDIA_TYPE=image
+
+# With custom dataset
+make retrain MEDIA_TYPE=image DATASET_DIR=./my_dataset/images
+
+# Use Optuna optimizer
+make retrain MEDIA_TYPE=image OPTIMIZER=optuna TRIALS=100
+```
+
 ## Checklist
 
 - [ ] model.yaml with name, media_type, model_class, port
 - [ ] detector.py extending ImageModel/VideoModel/AudioModel
 - [ ] Dockerfile using SDK + deepsafe serve
 - [ ] requirements.txt with model-specific dependencies
-- [ ] Entry in docker-compose.yml
-- [ ] Entry in config/deepsafe_config.json
+- [ ] Entry in docker-compose.yml (auto: `make add-model`)
+- [ ] Entry in config/deepsafe_config.json (auto: `make add-model`)
+- [ ] Ensemble retrained (auto: `make retrain`)

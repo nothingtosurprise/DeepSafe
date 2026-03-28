@@ -1,7 +1,6 @@
 import pytest
 import sys
 import os
-from pathlib import Path
 
 # Add project root to sys.path so we can import deepsafe_utils and api
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))

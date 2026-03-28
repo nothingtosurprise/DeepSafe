@@ -17,5 +17,6 @@ models/audio/vocoder_artifacts/temp_repo/
 walkthrough.md
 VERIFICATION.md
 sdk/.venv/
-sdk/.venv/
 sdk/deepsafe_sdk.egg-info/
+docs/superpowers
+public_dataset

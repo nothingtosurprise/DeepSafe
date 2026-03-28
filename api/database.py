@@ -11,7 +11,6 @@ from sqlalchemy import (
     Float,
     DateTime,
     Text,
-    Boolean,
 )
 from sqlalchemy.orm import declarative_base
 from sqlalchemy.orm import sessionmaker

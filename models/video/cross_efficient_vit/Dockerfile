@@ -37,23 +37,27 @@ WORKDIR /app/model
 
 RUN git clone https://github.com/davide-coccomini/Combining-EfficientNet-and-Vision-Transformers-for-Video-Deepfake-Detection.git model_code
 
-RUN mkdir -p /app/model/model_code/gdrive_weights && \
+# Set up weight directories
+RUN mkdir -p /app/model/model_code/efficient-vit/pretrained_models && \
+    mkdir -p /app/model/model_code/cross-efficient-vit/pretrained_models
+
+# Download model weights (HuggingFace mirror with Google Drive fallback)
+RUN (wget -O /app/model/model_code/cross-efficient-vit/pretrained_models/cross_efficient_vit.pth \
+    https://huggingface.co/siddharthksah/DeepSafe-weights/resolve/main/cross_efficient_vit/cross_efficient_vit.pth && \
+    wget -O /app/model/model_code/efficient-vit/pretrained_models/efficient_vit.pth \
+    https://huggingface.co/siddharthksah/DeepSafe-weights/resolve/main/cross_efficient_vit/efficient_vit.pth) \
+    || (echo "HuggingFace download failed, falling back to Google Drive..." && \
+    mkdir -p /app/model/model_code/gdrive_weights && \
     for i in 1 2 3; do \
         gdown --folder https://drive.google.com/drive/folders/19bNOs8_rZ7LmPP3boDS3XvZcR1iryHR1 -O /app/model/model_code/gdrive_weights --remaining-ok && break; \
         echo "gdown attempt $i failed, retrying in 10s..."; \
         sleep 10; \
-    done
-
-RUN mkdir -p /app/model/model_code/efficient-vit/pretrained_models && \
-    mkdir -p /app/model/model_code/cross-efficient-vit/pretrained_models
-
-RUN if [ -f /app/model/model_code/gdrive_weights/efficient_vit.pth ]; then \
-        mv /app/model/model_code/gdrive_weights/efficient_vit.pth /app/model/model_code/efficient-vit/pretrained_models/efficient_vit.pth; \
-    fi && \
-    if [ -f /app/model/model_code/gdrive_weights/cross_efficient_vit.pth ]; then \
+    done && \
+    [ -f /app/model/model_code/gdrive_weights/cross_efficient_vit.pth ] && \
         mv /app/model/model_code/gdrive_weights/cross_efficient_vit.pth /app/model/model_code/cross-efficient-vit/pretrained_models/cross_efficient_vit.pth; \
-    fi && \
-    rm -rf /app/model/model_code/gdrive_weights
+    [ -f /app/model/model_code/gdrive_weights/efficient_vit.pth ] && \
+        mv /app/model/model_code/gdrive_weights/efficient_vit.pth /app/model/model_code/efficient-vit/pretrained_models/efficient_vit.pth; \
+    rm -rf /app/model/model_code/gdrive_weights)
 
 ENV PYTHONPATH=/app/model/model_code/cross-efficient-vit:/app/model/model_code/efficient-vit:/app/model/model_code/preprocessing:/app/model/model_code/cross-efficient-vit/efficient_net:${PYTHONPATH}
 

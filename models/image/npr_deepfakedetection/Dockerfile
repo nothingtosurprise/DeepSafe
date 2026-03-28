@@ -21,8 +21,10 @@ WORKDIR /app/model
 
 RUN git clone https://github.com/chuangchuangtan/NPR-DeepfakeDetection.git npr_deepfakedetection && \
     mkdir -p npr_deepfakedetection/weights && \
-    wget -O npr_deepfakedetection/weights/NPR.pth \
-    https://github.com/chuangchuangtan/NPR-DeepfakeDetection/raw/main/model_epoch_last_3090.pth
+    (wget -O npr_deepfakedetection/weights/NPR.pth \
+    https://huggingface.co/siddharthksah/DeepSafe-weights/resolve/main/npr_deepfakedetection/NPR.pth \
+    || wget -O npr_deepfakedetection/weights/NPR.pth \
+    https://github.com/chuangchuangtan/NPR-DeepfakeDetection/raw/main/model_epoch_last_3090.pth)
 
 ENV MODEL_PORT=5001
 ENV USE_GPU=false
