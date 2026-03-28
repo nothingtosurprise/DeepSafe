@@ -21,7 +21,7 @@ name: my_model
 version: "1.0.0"
 media_type: image          # image | video | audio
 model_class: detector.MyDetector
-port: 5010
+port: 5020
 
 weights:
   - url: https://example.com/weights.pth
@@ -133,7 +133,7 @@ RUN pip install --no-cache-dir -r /app/requirements.txt
 COPY models/image/my_model/ /app/model/
 WORKDIR /app/model
 
-EXPOSE 5010
+EXPOSE 5020
 CMD ["deepsafe", "serve", "--manifest", "model.yaml"]
 ```
 
@@ -147,7 +147,7 @@ Add to docker-compose.yml:
       context: .
       dockerfile: models/image/my_model/Dockerfile
     ports:
-      - "5010:5010"
+      - "5020:5020"
     environment:
       - PRELOAD_MODEL=false
       - MODEL_TIMEOUT=600
@@ -164,10 +164,10 @@ Add to config/deepsafe_config.json under the matching media type:
 ```json
 {
   "model_endpoints": {
-    "my_model": "http://my_model:5010/predict"
+    "my_model": "http://my_model:5020/predict"
   },
   "health_endpoints": {
-    "my_model": "http://my_model:5010/health"
+    "my_model": "http://my_model:5020/health"
   }
 }
 ```
@@ -176,7 +176,7 @@ Add to config/deepsafe_config.json under the matching media type:
 
 ```bash
 docker compose up -d --build my_model
-curl http://localhost:5010/health
+curl http://localhost:5020/health
 ```
 
 Your model is now part of the DeepSafe ensemble.
