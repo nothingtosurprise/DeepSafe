@@ -9,6 +9,7 @@ setup(
         "uvicorn>=0.22.0",
         "pydantic>=2.0.0",
         "pyyaml>=6.0",
+        "Pillow>=9.0.0",
     ],
     entry_points={
         "console_scripts": [
