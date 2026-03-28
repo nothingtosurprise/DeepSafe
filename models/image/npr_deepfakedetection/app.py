@@ -120,7 +120,9 @@ def load_model_internal():
         try:
             # 'resnet50' is now guaranteed to be in the global scope if the script reached this point
             _model = resnet50(num_classes=1)
-            state_dict = torch.load(MODEL_FULL_PATH, map_location=DEVICE, weights_only=False)
+            state_dict = torch.load(
+                MODEL_FULL_PATH, map_location=DEVICE, weights_only=False
+            )
 
             if all(key.startswith("module.") for key in state_dict.keys()):
                 logger.info("Removing 'module.' prefix from state_dict keys.")

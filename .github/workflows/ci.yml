@@ -7,35 +7,67 @@ on:
     branches: [ main ]
 
 jobs:
-  build-and-test:
+  lint:
     runs-on: ubuntu-latest
-
     steps:
     - uses: actions/checkout@v4
 
     - name: Set up Python 3.9
       uses: actions/setup-python@v5
       with:
-        python-version: 3.9
+        python-version: "3.9"
+
+    - name: Install linting tools
+      run: pip install black flake8
+
+    - name: Check formatting with Black
+      run: black --check .
+
+    - name: Lint with Flake8
+      run: |
+        # Fail on syntax errors or undefined names
+        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+        # Warn on style issues (non-blocking)
+        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+
+  test:
+    runs-on: ubuntu-latest
+    needs: lint
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python 3.9
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.9"
 
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install black flake8 pytest
+        pip install pytest httpx
+        pip install fastapi uvicorn pydantic aiohttp python-multipart pillow requests
+        pip install joblib scikit-learn pandas rich sqlalchemy
+        pip install "python-jose[cryptography]" "passlib[bcrypt]"
 
-    - name: Lint with Black
-      run: |
-        black --check .
+    - name: Run unit tests
+      env:
+        DEEPSAFE_CONFIG_FILE_PATH: config/deepsafe_config.json
+      run: pytest tests/test_api_unit.py -v
 
-    - name: Lint with Flake8
-      run: |
-        # stop the build if there are Python syntax errors or undefined names
-        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-        # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
-        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+  docker:
+    runs-on: ubuntu-latest
+    needs: lint
+    steps:
+    - uses: actions/checkout@v4
 
-    # Note: Full system tests require Docker, which can be heavy for standard CI.
-    # For now, we verify that the docker-compose config is valid.
-    - name: Verify Docker Compose Config
-      run: |
-        docker compose config
+    - name: Validate Docker Compose config
+      run: docker compose config --quiet
+
+    - name: Build API service
+      run: docker compose build api
+
+    - name: Build NPR model service
+      run: docker compose build npr_deepfakedetection
+
+    - name: Build frontend
+      run: docker compose build frontend

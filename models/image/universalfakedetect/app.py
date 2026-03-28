@@ -160,7 +160,9 @@ def load_model():
 
             # Load the weights
             logger.info(f"Loading weights from {weights_path}")
-            state_dict = torch.load(weights_path, map_location="cpu", weights_only=False)
+            state_dict = torch.load(
+                weights_path, map_location="cpu", weights_only=False
+            )
             model.fc.load_state_dict(state_dict)
 
             # Move model to device and set to evaluation mode
